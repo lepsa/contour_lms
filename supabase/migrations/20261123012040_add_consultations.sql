@@ -16,5 +16,4 @@ create table public.consultation (
 );
 ALTER TABLE public.consultation ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own profile" ON consultation
-  -- Don't let users see their deleted consultations.
-  FOR SELECT USING (auth.uid() = id and active = true);
+  FOR SELECT USING (auth.uid() = id);
