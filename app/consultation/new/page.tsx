@@ -13,9 +13,10 @@ const NewConsultationInner = () => {
   let [lastName, setLastName] = useState<Optional<string>>();
   let [reason, setReason] = useState<string>();
 
-  let today = new Date()
+  let minDate = new Date();
   // The date creation gracefully handles rolling over the end of a month into the next month.
-  let minDateString = toDateTimeLocal(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 0, 0, 0, 0));
+  minDate.setDate(minDate.getDate() + 1);
+  let minDateString = toDateTimeLocal(minDate);
 
   let [scheduled, setScheduled] = useState<string>(minDateString);
 

@@ -1,3 +1,6 @@
+"use client"
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -5,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { redirect } from "next/navigation";
 
 export default function Page() {
   return (
@@ -23,6 +27,7 @@ export default function Page() {
                 You&apos;ve successfully signed up. Please check your email to
                 confirm your account before signing in.
               </p>
+              <Button onClick={ () => redirect("/")}>Go back to front page</Button>
             </CardContent>
           </Card>
         </div>

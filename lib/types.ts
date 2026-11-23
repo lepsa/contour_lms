@@ -8,5 +8,6 @@ export type ConsultationData = {
   first_name: Optional<string>,
   last_name: Optional<string>,
   reason: string,
-  scheduled: string
+  scheduled: string,
+  status: Optional<string>,
 };

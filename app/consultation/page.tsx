@@ -1,8 +1,9 @@
 import { RequestConsultationButton, ConsultationCard } from "@/components/consultations";
 import { userConsultations } from "@/lib/data";
 import Link from "next/link"
+import { Suspense } from "react";
 
-export const ConsultationPage = async () => {
+const ConsultationPageInner = async () => {
   let consultations = await userConsultations();
   return (
     <div className="flex-1 w-full flex flex-col gap-12">
@@ -21,4 +22,8 @@ export const ConsultationPage = async () => {
     </div>
   )
 };
+
+export const ConsultationPage = () => (
+  <Suspense><ConsultationPageInner/></Suspense>
+)
 export default ConsultationPage

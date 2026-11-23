@@ -25,7 +25,15 @@ let roleSwitch = (role: Optional<string>) => {
   switch (role) {
     case "user": return <ConsultationPage />
     case "admin": return <AdminPage />
-    default: return <></>
+    default: return <div>
+      <p>
+        A user is required for this demo to function. A regular user can be created using the sign-up flow.
+      </p>
+      <br/>
+      <p>        
+        To create an admin user, you first need to create a regular user, and then promote them to admin by updating their `app_role` in supabase to `admin`
+      </p>
+    </div>
   }
 }
 

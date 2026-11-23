@@ -1,12 +1,12 @@
 "use client"
 
-import { ConsultationData, Optional } from "@/lib/types";
+import { ConsultationData } from "@/lib/types";
 import { Button } from "./ui/button";
 import { supabase } from "@/lib/utils";
 import { redirect } from "next/navigation";
 
-export const ConsultationCard = (props: ConsultationData) => {
-  let cancelConsultation = async () => {
+const ConsultationCardButtons = (props: { id: string }) => {
+  const cancelConsultation = async () => {
     let { error } = await supabase.from("consultation").update({ active: false }).eq('id', props.id)
     if (error) {
       alert(JSON.stringify(error))
@@ -14,8 +14,23 @@ export const ConsultationCard = (props: ConsultationData) => {
       redirect("/consultation");
     }
   }
+  const rescheduleRedirect = () => redirect(`/consultation/${props.id}`)
 
-  let rescheduleRedirect = () => redirect(`/consultation/${props.id}`)
+  const markStatus = async (id: string, status: string): Promise<void> => {
+    await supabase.from("consultation").update({ status: status }).eq('id', id)
+    redirect("/consultation");
+  }
+  return (
+    <>
+      <Button size="sm" className="bg-green-300" variant={"secondary"} onClick={() => markStatus(props.id, "complete")}>Mark Complete</Button>
+      <Button size="sm" className="bg-orange-300" variant={"secondary"} onClick={() => markStatus(props.id, "incomplete")}>Mark Incomplete</Button>
+      <Button size="sm" onClick={() => rescheduleRedirect()}>Reschedule</Button>
+      <Button size="sm" variant="destructive" onClick={cancelConsultation}>Cancel</Button>
+    </>
+  )
+}
+
+export const ConsultationCard = (props: ConsultationData) => {
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   return (
@@ -28,15 +43,19 @@ export const ConsultationCard = (props: ConsultationData) => {
       <div>{props.last_name}</div>
       <h3 className="font-semibold">Scheduled</h3>
       <div>{
-
         new Intl.DateTimeFormat("en-AU", {
           dateStyle: "full",
           timeStyle: "long",
           timeZone: timezone,
         }).format(new Date(props.scheduled))
       }</div>
-      <Button size="sm" onClick={() => rescheduleRedirect()}>Reschedule</Button>
-      <Button size="sm" variant="destructive" onClick={cancelConsultation}>Cancel</Button>
+      { props.status == null
+        ? <ConsultationCardButtons id={props.id} />
+        : <>
+            <h3 className="font-semibold">Status</h3>
+            <div>{props.status}</div>
+        </>
+      }
     </div>
   )
 }

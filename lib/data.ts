@@ -1,5 +1,6 @@
 import { ConsultationData, Optional } from "./types";
 import { createClient } from "./supabase/server";
+import { supabase } from "./utils";
 
 // This function is used by both the user and admin views into the application state.
 // Access control is enforced with postgres policies, limiting regular users to only
