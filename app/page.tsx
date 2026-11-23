@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Optional } from "@/lib/types";
 import { ConsultationPage } from "./consultation/page";
 import { AdminPage } from "./admin/page";
+import { userRole } from "@/lib/data";
 
 let userDetails = async (): Promise<Optional<any>> => {
   let supabase = await createClient();
@@ -20,28 +21,20 @@ let userDetails = async (): Promise<Optional<any>> => {
   return data.claims
 }
 
-let userRole = async (id:string): Promise<Optional<string>> => {
-  let supabase = await createClient();
-  let { data } = await supabase.from("app_role").select("*").eq("id", id);
-  if (data && data?.length > 0) {
-    return data[0].role
-  }
-  return null
-}
-
-let roleSwitch = (role:Optional<string>) => {
-  switch(role) {
+let roleSwitch = (role: Optional<string>) => {
+  switch (role) {
     case "user": return <ConsultationPage />
     case "admin": return <AdminPage />
     default: return <></>
   }
 }
 
-export default async function Home() {
+export const HomeInner = async () => {
   let user = await userDetails();
-  let role = await userRole(user.sub)
-  console.log(user)
-  console.log(role)
+  let role = null;
+  if(user && user.sub) {
+    role = await userRole(user.sub);
+  }
   return (
     <main className="min-h-screen flex flex-col items-center">
       <div className="flex-1 w-full flex flex-col gap-20 items-center">
@@ -62,7 +55,7 @@ export default async function Home() {
         <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
           <Hero />
           <main className="flex-1 flex flex-col gap-6 px-4">
-            { roleSwitch(role) }
+            {roleSwitch(role)}
           </main>
         </div>
 
@@ -84,3 +77,8 @@ export default async function Home() {
     </main>
   );
 }
+
+export const Home = () => (
+  <Suspense><HomeInner /></Suspense>
+)
+export default Home

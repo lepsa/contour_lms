@@ -1,6 +1,6 @@
 "use client"
 
-import { ConsultationData } from "@/lib/types";
+import { ConsultationData, Optional } from "@/lib/types";
 import { Button } from "./ui/button";
 import { supabase } from "@/lib/utils";
 import { redirect } from "next/navigation";
@@ -28,11 +28,11 @@ export const ConsultationCard = (props: ConsultationData) => {
       <div>{props.last_name}</div>
       <h3 className="font-semibold">Scheduled</h3>
       <div>{
-        
+
         new Intl.DateTimeFormat("en-AU", {
-              dateStyle: "full",
-              timeStyle: "long",
-              timeZone: timezone,
+          dateStyle: "full",
+          timeStyle: "long",
+          timeZone: timezone,
         }).format(new Date(props.scheduled))
       }</div>
       <Button size="sm" onClick={() => rescheduleRedirect()}>Reschedule</Button>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "./logout-button";
+import { userRole } from "@/lib/data";
 
 export async function AuthButton() {
   const supabase = await createClient();
@@ -11,8 +12,18 @@ export async function AuthButton() {
 
   const user = data?.claims;
 
+  let role = undefined;
+  if(user && user.sub) {
+    role = await userRole(user.sub);
+  }
+
+  let userClass = "flex items-center gap-4"
+  if(role === "admin") {
+    userClass += " text-red-600"
+  }
+
   return user ? (
-    <div className="flex items-center gap-4">
+    <div className={userClass}>
       Hey, {user.email}!
       <LogoutButton />
     </div>

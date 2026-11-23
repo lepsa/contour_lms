@@ -3,11 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Optional } from "@/lib/types";
-import { supabase } from "@/lib/utils";
+import { supabase, toDateTimeLocal } from "@/lib/utils";
 import { redirect } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
-const NewConsultation = () => {
+const NewConsultationInner = () => {
 
   let [firstName, setFirstName] = useState<Optional<string>>();
   let [lastName, setLastName] = useState<Optional<string>>();
@@ -16,7 +16,7 @@ const NewConsultation = () => {
 
   let submitRequest = async () => {
     let { data } = await supabase.auth.getUser();
-    
+
     let { error } = await supabase.from("consultation").insert(
       {
         user_id: data.user?.id
@@ -29,7 +29,7 @@ const NewConsultation = () => {
     );
 
     // As simple as possible for error handling
-    if(error) {
+    if (error) {
       alert(JSON.stringify(error));
     } else {
       redirect("/consultation");
@@ -37,22 +37,34 @@ const NewConsultation = () => {
 
   }
 
+  let today = new Date()
+  // The date creation gracefully handles rolling over the end of a month into the next month.
+  let minDateString = toDateTimeLocal(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 0, 0, 0, 0));
+  let valueString: string;
+  if(scheduled) {
+    valueString = toDateTimeLocal(scheduled);
+  } else {
+    valueString = minDateString;
+  }
+
   return (
-    <div className="flex-1 w-full flex flex-col gap-12">
-      <div className="flex flex-col gap-2 items-start">
-        <label htmlFor="firstName" className="font-bold text-2xl">First Name</label>
-        <Input id="firstName" type="text" placeholder="First Name" onChange={e => setFirstName(e.target.value)}></Input>
-        <label htmlFor="lastName" className="font-bold text-2xl">Last Name</label>
-        <Input id="lastName" type="text" placeholder="Last Name" onChange={e => setLastName(e.target.value)}></Input>
-        <label htmlFor="reason" className="font-bold text-2xl">Reason for Consultation</label>
-        <Input id="reason" type="text" placeholder="I need help with my..." required onChange={e => setReason(e.target.value)}></Input>
-        <label htmlFor="scheduled" className="font-bold text-2xl">Date</label>
-        <Input id="scheduled" type="datetime-local" required onChange={e => setScheduled(new Date(e.target.value))}></Input>
-        <Button size="sm" onClick={submitRequest}>Submit Consultation Request</Button>
-        <hr />
-      </div>
+    <div className="grid grid-cols-1 grid-rows-4 gap-4 m-[2rem] p-[1rem]">
+      <label htmlFor="firstName" className="font-bold text-2xl">First Name</label>
+      <Input id="firstName" type="text" placeholder="First Name" onChange={e => setFirstName(e.target.value)}></Input>
+      <label htmlFor="lastName" className="font-bold text-2xl">Last Name</label>
+      <Input id="lastName" type="text" placeholder="Last Name" onChange={e => setLastName(e.target.value)}></Input>
+      <label htmlFor="reason" className="font-bold text-2xl">Reason for Consultation</label>
+      <Input id="reason" type="text" placeholder="I need help with my..." required onChange={e => setReason(e.target.value)}></Input>
+      <label htmlFor="scheduled" className="font-bold text-2xl">Date</label>
+      <Input id="scheduled" type="datetime-local" required min={minDateString} value={valueString} onChange={e => setScheduled(new Date(e.target.value))}></Input>
+      <Button className="mt-4" size="sm" onClick={submitRequest}>Submit Consultation Request</Button>
     </div>
   );
 }
 
+export const NewConsultation = () => (
+  <Suspense>
+    <NewConsultationInner/>
+  </Suspense>
+)
 export default NewConsultation;
