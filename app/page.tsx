@@ -8,36 +8,40 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { Optional } from "@/lib/types";
 import { ConsultationPage } from "./consultation/page";
+import { AdminPage } from "./admin/page";
 
-// Keep the build system happy about how I'm accessing user claims
-export const instant = false;
-
-async function UserDetails(): Promise<Optional<any>> {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
+let userDetails = async (): Promise<Optional<any>> => {
+  let supabase = await createClient();
+  let { data, error } = await supabase.auth.getClaims();
 
   if (error || !data?.claims) {
     return null;
   }
-
-  return data.claims;
+  return data.claims
 }
 
-async function UserConsultations(): Promise<Optional<any>> {
+let userRole = async (id:string): Promise<Optional<string>> => {
   let supabase = await createClient();
-  const { data, error } = await supabase
-    .from('consultation')
-    .select('*');
-  if (error) {
-    console.log(error);
-    return null;
-  } else {
-    return data
+  let { data } = await supabase.from("app_role").select("*").eq("id", id);
+  if (data && data?.length > 0) {
+    return data[0].role
+  }
+  return null
+}
+
+let roleSwitch = (role:Optional<string>) => {
+  switch(role) {
+    case "user": return <ConsultationPage />
+    case "admin": return <AdminPage />
+    default: return <></>
   }
 }
 
 export default async function Home() {
-  let user = await UserDetails();
+  let user = await userDetails();
+  let role = await userRole(user.sub)
+  console.log(user)
+  console.log(role)
   return (
     <main className="min-h-screen flex flex-col items-center">
       <div className="flex-1 w-full flex flex-col gap-20 items-center">
@@ -58,7 +62,7 @@ export default async function Home() {
         <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
           <Hero />
           <main className="flex-1 flex flex-col gap-6 px-4">
-            {user ? <ConsultationPage /> : "no user"}
+            { roleSwitch(role) }
           </main>
         </div>
 
