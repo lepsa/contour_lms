@@ -12,7 +12,13 @@ const NewConsultationInner = () => {
   let [firstName, setFirstName] = useState<Optional<string>>();
   let [lastName, setLastName] = useState<Optional<string>>();
   let [reason, setReason] = useState<string>();
-  let [scheduled, setScheduled] = useState<Date>();
+
+  let today = new Date()
+  // The date creation gracefully handles rolling over the end of a month into the next month.
+  let minDateString = toDateTimeLocal(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 0, 0, 0, 0));
+
+  let [scheduled, setScheduled] = useState<string>(minDateString);
+
 
   let submitRequest = async () => {
     let { data } = await supabase.auth.getUser();
@@ -23,7 +29,7 @@ const NewConsultationInner = () => {
         , first_name: firstName
         , last_name: lastName
         , reason: reason
-        , scheduled: scheduled
+        , scheduled: new Date(scheduled)
         , active: true
       }
     );
@@ -36,17 +42,6 @@ const NewConsultationInner = () => {
     }
 
   }
-
-  let today = new Date()
-  // The date creation gracefully handles rolling over the end of a month into the next month.
-  let minDateString = toDateTimeLocal(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 0, 0, 0, 0));
-  let valueString: string;
-  if(scheduled) {
-    valueString = toDateTimeLocal(scheduled);
-  } else {
-    valueString = minDateString;
-  }
-
   return (
     <div className="grid grid-cols-1 grid-rows-4 gap-4 m-[2rem] p-[1rem]">
       <label htmlFor="firstName" className="font-bold text-2xl">First Name</label>
@@ -56,7 +51,7 @@ const NewConsultationInner = () => {
       <label htmlFor="reason" className="font-bold text-2xl">Reason for Consultation</label>
       <Input id="reason" type="text" placeholder="I need help with my..." required onChange={e => setReason(e.target.value)}></Input>
       <label htmlFor="scheduled" className="font-bold text-2xl">Date</label>
-      <Input id="scheduled" type="datetime-local" required min={minDateString} value={valueString} onChange={e => setScheduled(new Date(e.target.value))}></Input>
+      <Input id="scheduled" type="datetime-local" required min={minDateString} value={scheduled} onChange={e => setScheduled(e.target.value)}></Input>
       <Button className="mt-4" size="sm" onClick={submitRequest}>Submit Consultation Request</Button>
     </div>
   );
@@ -64,7 +59,7 @@ const NewConsultationInner = () => {
 
 export const NewConsultation = () => (
   <Suspense>
-    <NewConsultationInner/>
+    <NewConsultationInner />
   </Suspense>
 )
 export default NewConsultation;
