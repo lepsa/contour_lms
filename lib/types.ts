@@ -1,4 +1,8 @@
 
+// These must be kept in sync with the types in the database.
+export type Role = "user" | "admin";
+export type Status = "complete" | "incomplete";
+
 export type Optional<a> = a | null;
 
 // This data comes over the wire as json. As such,
@@ -9,5 +13,5 @@ export type ConsultationData = {
   last_name: Optional<string>,
   reason: string,
   scheduled: string,
-  status: Optional<string>,
+  status: Optional<Status>,
 };

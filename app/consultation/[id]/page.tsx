@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Optional } from "@/lib/types";
 import { supabase, toDateTimeLocal } from "@/lib/utils";
 import { redirect, useParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
@@ -13,10 +12,10 @@ const UpdateConsultationInner = () => {
   let [lastName, setLastName] = useState<string | undefined>("");
   let [reason, setReason] = useState<string>("");
 
-  let minDate = new Date();
+  const minDate = new Date();
   // The date creation gracefully handles rolling over the end of a month into the next month.
   minDate.setDate(minDate.getDate() + 1);
-  let minDateString = toDateTimeLocal(minDate);
+  const minDateString = toDateTimeLocal(minDate);
 
   let [scheduled, setScheduled] = useState<string>(minDateString);
 
@@ -35,7 +34,7 @@ const UpdateConsultationInner = () => {
   }, [id])
 
 
-  let submitRequest = async () => {
+  const submitRequest = async () => {
     let { error } = await supabase.from("consultation").update(
       {
         first_name: firstName,

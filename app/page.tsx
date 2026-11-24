@@ -6,12 +6,12 @@ import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { Optional } from "@/lib/types";
+import { Optional, Role } from "@/lib/types";
 import { ConsultationPage } from "./consultation/page";
 import { AdminPage } from "./admin/page";
 import { userRole } from "@/lib/data";
 
-let userDetails = async (): Promise<Optional<any>> => {
+const userDetails = async (): Promise<Optional<any>> => {
   let supabase = await createClient();
   let { data, error } = await supabase.auth.getClaims();
 
@@ -21,7 +21,7 @@ let userDetails = async (): Promise<Optional<any>> => {
   return data.claims
 }
 
-let roleSwitch = (role: Optional<string>) => {
+const roleSwitch = (role: Optional<Role>) => {
   switch (role) {
     case "user": return <ConsultationPage />
     case "admin": return <AdminPage />
@@ -37,9 +37,9 @@ let roleSwitch = (role: Optional<string>) => {
   }
 }
 
-export const HomeInner = async () => {
+const HomeInner = async () => {
   let user = await userDetails();
-  let role = null;
+  let role : Optional<Role> = null;
   if(user && user.sub) {
     role = await userRole(user.sub);
   }

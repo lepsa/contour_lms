@@ -1,6 +1,5 @@
 import { RequestConsultationButton, ConsultationCard } from "@/components/consultations";
 import { userConsultations } from "@/lib/data";
-import Link from "next/link"
 import { Suspense } from "react";
 
 const ConsultationPageInner = async () => {
@@ -9,9 +8,9 @@ const ConsultationPageInner = async () => {
     <div className="flex-1 w-full flex flex-col gap-12">
       <div className="flex items-center flex-col gap-2 items-start">
         <h2 className="font-bold text-2xl mb-4">Upcoming Consoltations</h2>
-        <RequestConsultationButton/>
+        <RequestConsultationButton />
         <ul className="list-none">
-          {(consultations || []).map((data, index) =>
+          {consultations.map((data, index) =>
             <li className="m-[1rem]" key={index}>
               <ConsultationCard {...data} />
             </li>
@@ -24,6 +23,8 @@ const ConsultationPageInner = async () => {
 };
 
 export const ConsultationPage = () => (
-  <Suspense><ConsultationPageInner/></Suspense>
+  <Suspense>
+    <ConsultationPageInner />
+  </Suspense>
 )
 export default ConsultationPage

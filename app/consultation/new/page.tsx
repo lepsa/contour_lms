@@ -13,15 +13,15 @@ const NewConsultationInner = () => {
   let [lastName, setLastName] = useState<Optional<string>>();
   let [reason, setReason] = useState<string>();
 
-  let minDate = new Date();
+  const minDate = new Date();
   // The date creation gracefully handles rolling over the end of a month into the next month.
   minDate.setDate(minDate.getDate() + 1);
-  let minDateString = toDateTimeLocal(minDate);
+  const minDateString = toDateTimeLocal(minDate);
 
   let [scheduled, setScheduled] = useState<string>(minDateString);
 
 
-  let submitRequest = async () => {
+  const submitRequest = async () => {
     let { data } = await supabase.auth.getUser();
 
     let { error } = await supabase.from("consultation").insert(

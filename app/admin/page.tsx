@@ -10,7 +10,7 @@ const AdminPageInner = async () => {
         <h2 className="font-bold text-2xl mb-4">All Upcoming Consoltations</h2>
         <RequestConsultationButton />
         <ul className="list-none">
-          {(consultations || []).map((data, index) =>
+          {consultations.map((data, index) =>
             <li className="m-[1rem]" key={index}>
               <ConsultationCard {...data} />
             </li>

@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "./logout-button";
 import { userRole } from "@/lib/data";
+import { Optional, Role } from "@/lib/types";
 
 export async function AuthButton() {
   const supabase = await createClient();
@@ -12,7 +13,7 @@ export async function AuthButton() {
 
   const user = data?.claims;
 
-  let role = undefined;
+  let role : Optional<Role> = null;
   if(user && user.sub) {
     role = await userRole(user.sub);
   }
